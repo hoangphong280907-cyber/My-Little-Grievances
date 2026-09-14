@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Her Little Grievances</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --bg-color: #fcfbf9;
+            --text-main: #333333;
+            --text-muted: #777777;
+            --card-bg: #ffffff;
+            --border-color: #eaeaea;
+            --accent: #c07a7a; /* Muted red/pink */
+            --accent-hover: #a86565;
+            --progress-bg: #f0eaea;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --modal-bg: rgba(0, 0, 0, 0.4);
+            --danger: #d9534f;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Variables */
+            --bg-color: #1c1b1b;
+            --text-main: #e6e6e6;
+            --text-muted: #999999;
+            --card-bg: #252424;
+            --border-color: #383838;
+            --accent: #b06a6a;
+            --accent-hover: #c47c7c;
+            --progress-bg: #333333;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            --modal-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Lora', serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px; /* Space for FAB */
+        }
+
+        /* Header & Dashboard */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+            position: relative;
+        }
+
+        .top-controls {
+            position: absolute;
+            top: 10px;
+            right: 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .icon-btn:hover {
+            color: var(--text-main);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .dashboard {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .total-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .total-count {
+            font-family: 'Lora', serif;
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--progress-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.8s ease-out;
+            border-radius: 4px;
+        }
+
+        .progress-percentage {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .message {
+            margin-top: 15px;
+            font-style: italic;
+            color: var(--accent);
+            font-family: 'Lora', serif;
+            font-size: 1.05rem;
+        }
+
+        /* Controls: Search & Filter */
+        .list-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none;
+        }
+        .filters::-webkit-scrollbar { display: none; }
+
+        .filter-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid transparent;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .card-count {
+            background-color: var(--progress-bg);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .card-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--progress-bg);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+        }
+        
+        .btn-text {
+            background: none;
+            color: var(--text-muted);
+            padding: 8px 5px;
+            font-size: 0.85rem;
+        }
+        .btn-text:hover { color: var(--text-main); }
+        .btn-danger-text { color: var(--danger); }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--accent);
+            color: #fff;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(192, 122, 122, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 100;
+        }
+        .fab:hover { transform: scale(1.05); }
+
+        @media (max-width: 600px) {
+            .fab { bottom: 20px; right: 20px; }
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--modal-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 25px;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+        }
+        
+        .form-control:focus { border-color: var(--accent); }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* History List */
+        .history-list {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .history-item:last-child { border-bottom: none; }
+
+        .history-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .history-note {
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state p { margin-bottom: 20px; font-style: italic; }
+
+        /* Overview Section */
+        .overview-section {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .overview-item { flex: 1; min-width: 100px; }
+        .overview-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+        .overview-value { font-size: 1.1rem; font-weight: 500; font-family: 'Lora', serif; }
+        .overview-value.highlight { color: var(--accent); }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="top-controls">
+                <button class="icon-btn" id="btn-theme" title="Chuyển đổi giao diện">☀</button>
+                <button class="icon-btn" id="btn-settings" title="Cài đặt">⚙</button>
+            </div>
+            <h1>HER LITTLE GRIEVANCES</h1>
+            <p class="subtitle">«“Những điều em không muốn phải nhắc lại.”»</p>
+        </header>
+
+        <section class="dashboard">
+            <div class="total-text">Tổng số lần</div>
+            <div class="total-count" id="dash-total">0 / 100</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="dash-progress"></div>
+            </div>
+            <div class="progress-percentage" id="dash-percent">0%</div>
+            <div class="message" id="dash-message"></div>
+        </section>
+
+        <section class="overview-section" id="overview-section" style="display: none;">
+            <div class="overview-item">
+                <div class="overview-label">Số điều đã ghi nhận</div>
+                <div class="overview-value" id="stat-types">0</div>
+            </div>
+            <div class="overview-item">
+                <div class="overview-label">Xảy ra nhiều nhất</div>
+                <div class="overview-value highlight" id="stat-top">-</div>
+            </div>
+        </section>
+
+        <div class="list-controls">
+            <input type="text" id="search-input" class="search-box" placeholder="Tìm điều em không thích...">
+            <div class="filters" id="filters-container">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="most">Nhiều nhất</button>
+                <button class="filter-btn" data-filter="recent">Mới xảy ra</button>
+                <button class="filter-btn" data-filter="none">Chưa xảy ra</button>
+            </div>
+        </div>
+
+        <main id="grievance-list">
+            <!-- Cards Rendered Here -->
+        </main>
+    </div>
+
+    <button class="fab" id="btn-fab-add" title="Thêm điều em không thích">＋</button>
+
+    <!-- Modal: Add/Edit Grievance -->
+    <div class="modal-overlay" id="modal-grievance">
+        <div class="modal-content">
+            <h2 class="modal-title serif" id="modal-g-title">Thêm điều em không thích</h2>
+            <input type="hidden" id="g-id">
+            <div class="form-group">
+                <label>Tên điều không thích <span style="color:var(--danger)">*</span></label>
+                <input type="text" id="g-title-input" class="form-control" maxlength="100" placeholder="VD: Hay im lặng khi có chuyện">
+                <div class="error-msg" id="err-g-title">Vui lòng nhập tên điều không thích.</div>
+            </div>
+            <div class="form-group">
+                <label>Mô tả chi tiết</label>
+                <textarea id="g-desc-input" class="form-control" rows="3" maxlength="500" placeholder="VD: Em không thích việc anh im lặng..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-close-modal">Hủy</button>
+                <button class="btn btn-primary" id="btn-save-grievance">Lưu lại</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Record Incident -->
+    <div class="modal-overlay" id="modal-record">
+        <div class="modal-content">
+            <h2 class="modal-title serif">Điều này lại xảy ra?</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;" id="record-title-display"></p>
+            <input type="hidden" id="r-id">
+            <div class="form-group">
+                <label>Ghi chú (không bắt buộc)</label>
+                <textarea id="r-note-input" class="form-control" rows="3" maxlength="1000" placeholder="VD: Hôm nay anh ấy lại quên..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-close-modal">Hủy</button>
+                <button class="btn btn-primary" id="btn-save-record">Ghi nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: History -->
+    <div class="modal-overlay" id="modal-history">
+        <div class="modal-content">
+            <h2 class="modal-title serif" id="h-title-display">Lịch sử</h2>
+            <div style="font-size: 0.9rem; color: var(--accent); margin-bottom: 10px;" id="h-count-display"></div>
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin-bottom: 15px;">
+            <div class="history-list" id="history-container">
+                <!-- History Items Rendered Here -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-close-modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Settings / Reset -->
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal-content">
+            <h2 class="modal-title serif">Cài đặt</h2>
+            <div style="margin-top: 20px;">
+                <h3 style="font-size: 1rem; color: var(--danger); margin-bottom: 10px;">Xóa toàn bộ dữ liệu</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Tất cả những điều đã ghi lại và toàn bộ lịch sử sẽ bị xóa vĩnh viễn khỏi trình duyệt này.</p>
+                <button class="btn btn-primary" style="background-color: var(--danger); width: 100%;" id="btn-reset-data">Xóa toàn bộ dữ liệu</button>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-close-modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Confirm Delete Action -->
+    <div class="modal-overlay" id="modal-confirm">
+        <div class="modal-content">
+            <h2 class="modal-title serif" id="confirm-title">Xác nhận</h2>
+            <p style="font-size: 0.95rem; margin-bottom: 20px;" id="confirm-msg"></p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-close-modal">Hủy</button>
+                <button class="btn btn-primary" style="background-color: var(--danger);" id="btn-confirm-action">Xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'relationship_grievance_log';
+        
+        // State
+        let grievances = [];
+        let currentTheme = 'light';
+        let filterMode = 'all';
+        let searchQuery = '';
+        let confirmActionCallback = null;
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadData();
+            attachEventListeners();
+            renderAll();
+        });
+
+        // ================= DATA LOGIC =================
+        function loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                try {
+                    grievances = JSON.parse(raw);
+                } catch (e) {
+                    grievances = [];
+                }
+            } else {
+                grievances = [];
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(grievances));
+        }
+
+        function calculateTotal() {
+            return grievances.reduce((sum, g) => sum + g.count, 0);
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // ================= CORE ACTIONS =================
+        function addGrievance(title, description) {
+            const now = Date.now();
+            const newG = {
+                id: generateId(),
+                title: title.trim(),
+                description: description.trim(),
+                count: 1,
+                createdAt: now,
+                updatedAt: now,
+                history: []
+            };
+            grievances.push(newG);
+            saveData();
+            renderAll();
+        }
+
+        function editGrievance(id, title, description) {
+            const g = grievances.find(x => x.id === id);
+            if (g) {
+                g.title = title.trim();
+                g.description = description.trim();
+                saveData();
+                renderAll();
+            }
+        }
+
+        function deleteGrievance(id) {
+            grievances = grievances.filter(x => x.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        function recordIncident(id, note) {
+            const g = grievances.find(x => x.id === id);
+            if (g) {
+                const now = new Date();
+                const pad = (n) => n < 10 ? '0'+n : n;
+                
+                const dateStr = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
+                const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+                
+                g.count += 1;
+                g.updatedAt = now.getTime();
+                g.history.unshift({
+                    date: dateStr,
+                    time: timeStr,
+                    note: note.trim(),
+                    timestamp: now.getTime()
+                });
+                
+                saveData();
+                renderAll();
+            }
+        }
+
+        function resetAllData() {
+            localStorage.removeItem(STORAGE_KEY);
+            grievances = [];
+            renderAll();
+        }
+
+        // ================= RENDER LOGIC =================
+        function renderAll() {
+            renderDashboard();
+            renderOverview();
+            renderGrievancesList();
+        }
+
+        function renderDashboard() {
+            const total = calculateTotal();
+            const progress = Math.min((total / 100) * 100, 100);
+            
+            document.getElementById('dash-total').textContent = `${total} / 100`;
+            document.getElementById('dash-progress').style.width = `${progress}%`;
+            document.getElementById('dash-percent').textContent = `${Math.floor(progress)}%`;
+            
+            // Generate Message
+            let msg = "";
+            if (total === 0) msg = "«“Everything is okay.”»";
+            else if (total <= 10) msg = "«“Just little things.”»";
+            else if (total <= 25) msg = "«“There are things she doesn't like.”»";
+            else if (total <= 50) msg = "«“Maybe you should start paying attention.”»";
+            else if (total <= 75) msg = "«“She has been hurt more than once.”»";
+            else if (total <= 99) msg = "«“This is becoming a pattern.”»";
+            else msg = "«“100 times. This is no longer a coincidence.”»";
+            
+            document.getElementById('dash-message').textContent = msg;
+        }
+
+        function renderOverview() {
+            const section = document.getElementById('overview-section');
+            if (grievances.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'flex';
+            
+            document.getElementById('stat-types').textContent = grievances.length;
+            
+            const top = [...grievances].sort((a,b) => b.count - a.count)[0];
+            const statTop = document.getElementById('stat-top');
+            if (top && top.count > 0) {
+                statTop.textContent = `${top.title} (${top.count})`;
+            } else {
+                statTop.textContent = "-";
+            }
+        }
+
+        function renderGrievancesList() {
+            const container = document.getElementById('grievance-list');
+            container.innerHTML = '';
+
+            let filtered = [...grievances];
+
+            // Search
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = filtered.filter(g => 
+                    g.title.toLowerCase().includes(q) || 
+                    g.description.toLowerCase().includes(q)
+                );
+            }
+
+            // Filter
+            if (filterMode === 'most') {
+                filtered.sort((a, b) => b.count - a.count);
+            } else if (filterMode === 'recent') {
+                filtered.sort((a, b) => b.updatedAt - a.updatedAt);
+            } else if (filterMode === 'none') {
+                filtered = filtered.filter(g => g.count === 0);
+            } else {
+                // Default: Count desc
+                filtered.sort((a, b) => b.count - a.count);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>${searchQuery || filterMode !== 'all' ? 'Không tìm thấy kết quả phù hợp.' : 'Chưa có điều gì được ghi lại.<br>Có lẽ hôm nay mọi thứ vẫn ổn.'}</p>
+                        ${(!searchQuery && filterMode === 'all') ? `<button class="btn btn-primary" onclick="openGrievanceModal()">+ Thêm điều đầu tiên</button>` : ''}
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(g => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                let lastTime = '';
+                if (g.count > 0 && g.history.length > 0) {
+                    lastTime = `Gần nhất: ${g.history[0].time} - ${g.history[0].date}`;
+                }
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">${escapeHTML(g.title)}</div>
+                        <div class="card-count">${g.count} lần</div>
+                    </div>
+                    ${g.description ? `<div class="card-desc">“${escapeHTML(g.description)}”</div>` : ''}
+                    ${lastTime ? `<div class="card-meta">${lastTime}</div>` : ''}
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-record" data-id="${g.id}">+ Ghi nhận</button>
+                        <button class="btn btn-secondary btn-history" data-id="${g.id}">Lịch sử</button>
+                        <button class="btn btn-text btn-edit" data-id="${g.id}">Sửa</button>
+                        <button class="btn btn-text btn-danger-text btn-delete" data-id="${g.id}">Xóa</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            
+            attachCardEvents();
+        }
+
+        // ================= UI / EVENT HELPERS =================
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+
+        // ================= MODAL HANDLERS =================
+        function openGrievanceModal(id = null) {
+            const titleInput = document.getElementById('g-title-input');
+            const descInput = document.getElementById('g-desc-input');
+            const idInput = document.getElementById('g-id');
+            const modalTitle = document.getElementById('modal-g-title');
+            document.getElementById('err-g-title').style.display = 'none';
+
+            if (id) {
+                const g = grievances.find(x => x.id === id);
+                if (g) {
+                    modalTitle.textContent = "Chỉnh sửa";
+                    titleInput.value = g.title;
+                    descInput.value = g.description;
+                    idInput.value = g.id;
+                }
+            } else {
+                modalTitle.textContent = "Thêm điều em không thích";
+                titleInput.value = '';
+                descInput.value = '';
+                idInput.value = '';
+            }
+            openModal('modal-grievance');
+        }
+
+        function handleSaveGrievance() {
+            const id = document.getElementById('g-id').value;
+            const title = document.getElementById('g-title-input').value;
+            const desc = document.getElementById('g-desc-input').value;
+            const err = document.getElementById('err-g-title');
+
+            if (!title.trim()) {
+                err.style.display = 'block';
+                return;
+            }
+
+            if (id) {
+                editGrievance(id, title, desc);
+            } else {
+                addGrievance(title, desc);
+            }
+            closeAllModals();
+        }
+
+        function openRecordModal(id) {
+            const g = grievances.find(x => x.id === id);
+            if (!g) return;
+
+            document.getElementById('record-title-display').textContent = g.title;
+            document.getElementById('r-id').value = g.id;
+            document.getElementById('r-note-input').value = '';
+            openModal('modal-record');
+        }
+
+        function handleSaveRecord() {
+            const id = document.getElementById('r-id').value;
+            const note = document.getElementById('r-note-input').value;
+            recordIncident(id, note);
+            closeAllModals();
+        }
+
+        function openHistoryModal(id) {
+            const g = grievances.find(x => x.id === id);
+            if (!g) return;
+
+            document.getElementById('h-title-display').textContent = g.title;
+            document.getElementById('h-count-display').textContent = `${g.count} lần`;
+            
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+
+            if (g.history.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem;">Chưa có lịch sử vi phạm.</div>';
+            } else {
+                g.history.forEach(h => {
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.innerHTML = `
+                        <div class="history-meta">${h.date} • ${h.time}</div>
+                        <div class="history-note">${h.note ? `“${escapeHTML(h.note)}”` : '<span style="color:var(--text-muted);">Không có ghi chú.</span>'}</div>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+
+            openModal('modal-history');
+        }
+
+        function requestConfirm(title, message, callback) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-msg').innerHTML = message;
+            confirmActionCallback = callback;
+            openModal('modal-confirm');
+        }
+
+        // ================= THEME & EVENTS =================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('grievance_theme') || 'light';
+            setTheme(savedTheme);
+        }
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('grievance_theme', theme);
+            const btn = document.getElementById('btn-theme');
+            btn.textContent = theme === 'dark' ? '🌙' : '☀';
+        }
+
+        function attachEventListeners() {
+            // Theme toggle
+            document.getElementById('btn-theme').addEventListener('click', () => {
+                setTheme(currentTheme === 'light' ? 'dark' : 'light');
+            });
+
+            // Modals Close
+            document.querySelectorAll('.btn-close-modal').forEach(btn => {
+                btn.addEventListener('click', closeAllModals);
+            });
+            // Close when clicking overlay
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('mousedown', (e) => {
+                    if (e.target === overlay) closeAllModals();
+                });
+            });
+
+            // FAB
+            document.getElementById('btn-fab-add').addEventListener('click', () => openGrievanceModal());
+
+            // Save Grievance
+            document.getElementById('btn-save-grievance').addEventListener('click', handleSaveGrievance);
+
+            // Save Record
+            document.getElementById('btn-save-record').addEventListener('click', handleSaveRecord);
+
+            // Settings
+            document.getElementById('btn-settings').addEventListener('click', () => openModal('modal-settings'));
+            document.getElementById('btn-reset-data').addEventListener('click', () => {
+                closeAllModals();
+                requestConfirm('Xóa toàn bộ dữ liệu?', 'Bạn có chắc chắn muốn xóa toàn bộ dữ liệu?<br><br>Hành động này không thể hoàn tác.', () => {
+                    resetAllData();
+                    closeAllModals();
+                });
+            });
+
+            // Confirm Action
+            document.getElementById('btn-confirm-action').addEventListener('click', () => {
+                if (confirmActionCallback) {
+                    confirmActionCallback();
+                    confirmActionCallback = null;
+                }
+            });
+
+            // Search
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                renderGrievancesList();
+            });
+
+            // Filters
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    filterMode = e.target.getAttribute('data-filter');
+                    renderGrievancesList();
+                });
+            });
+        }
+
+        function attachCardEvents() {
+            document.querySelectorAll('.btn-record').forEach(btn => {
+                btn.addEventListener('click', (e) => openRecordModal(e.target.dataset.id));
+            });
+            document.querySelectorAll('.btn-history').forEach(btn => {
+                btn.addEventListener('click', (e) => openHistoryModal(e.target.dataset.id));
+            });
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => openGrievanceModal(e.target.dataset.id));
+            });
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    requestConfirm('Xóa điều này?', 'Toàn bộ lịch sử của điều này cũng sẽ bị xóa.', () => {
+                        deleteGrievance(id);
+                        closeAllModals();
+                    });
+                });
+            });
+        }
+
+    </script>
+</body>
+</html>
+
